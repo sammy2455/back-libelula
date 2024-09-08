@@ -1,0 +1,10 @@
+# Mac OS
+.DS_Store
+
+# Jetbrains
+.idea
+
+# Docker images
+/mysql
+/mongodb
+/postgresql

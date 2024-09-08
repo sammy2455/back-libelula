@@ -1,0 +1,100 @@
+version: '3.8'
+
+networks:
+  yii2:
+    name: yii2-network
+    driver: bridge
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./app:/var/www/html
+      - ./dockerfiles/nginx:/etc/nginx/conf.d
+    depends_on:
+      - php
+      - mongodb
+      - mailhog
+    networks:
+      - yii2
+
+  php:
+    image: yii2/php
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      args:
+        user: sammy
+        uid: 1000
+    container_name: php
+    restart: unless-stopped
+    volumes:
+      - ./app:/var/www/html
+    networks:
+      - yii2
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: unless-stopped
+    volumes:
+      - ./mongodb:/data/db
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=libelula
+    networks:
+      - yii2
+
+  composer:
+    image: yii2/composer
+    build:
+      context: ./dockerfiles
+      dockerfile: composer.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    container_name: composer
+    volumes:
+      - ./app:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - php
+    user: yii2
+    entrypoint: [ 'composer', '--ignore-platform-reqs' ]
+    networks:
+      - yii2
+
+  yii:
+    image: yii2/yii
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      args:
+        user: sammy
+        uid: 1000
+    container_name: yii
+    volumes:
+      - ./app:/var/www/html
+    depends_on:
+      - mongodb
+    working_dir: /var/www/html
+    entrypoint: [ 'php', '/var/www/html/yii' ]
+    networks:
+      - yii2
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - yii2
