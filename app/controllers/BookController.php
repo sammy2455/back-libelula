@@ -13,10 +13,24 @@ use yii\web\Request;
 use yii\web\Response;
 use yii\web\ServerErrorHttpException;
 
+/**
+ * BookController maneja las operaciones CRUD para el modelo Book.
+ *
+ * Esta clase extiende de yii\rest\ActiveController y proporciona
+ * endpoints RESTful para gestionar libros, incluyendo listado,
+ * visualización, creación, actualización y eliminación.
+ */
 class BookController extends ActiveController
 {
     public $modelClass = 'app\models\Book';
 
+    /**
+     * Define los comportamientos del controlador.
+     *
+     * Añade el filtro de autenticación JWT a los comportamientos heredados.
+     *
+     * @return array Los comportamientos configurados para este controlador
+     */
     public function behaviors(): array
     {
         $behaviors = parent::behaviors();
@@ -28,6 +42,14 @@ class BookController extends ActiveController
         return $behaviors;
     }
 
+    /**
+     * Define las acciones del controlador.
+     *
+     * Sobrescribe las acciones predeterminadas, personaliza el proveedor de datos
+     * para la acción de índice y el método de búsqueda para la acción de vista.
+     *
+     * @return array Las acciones configuradas para este controlador
+     */
     public function actions(): array
     {
         $actions = parent::actions();
@@ -39,6 +61,14 @@ class BookController extends ActiveController
         return $actions;
     }
 
+    /**
+     * Prepara el proveedor de datos para la acción de índice.
+     *
+     * Permite filtrar libros por género, autor y año de publicación si se proporcionan en la consulta.
+     *
+     * @return ActiveDataProvider El proveedor de datos configurado
+     * @throws ServerErrorHttpException si ocurre un error al preparar los datos
+     */
     public function prepareDataProvider(): ActiveDataProvider
     {
         try {
@@ -62,7 +92,15 @@ class BookController extends ActiveController
         }
     }
 
-    public function findModel($id): Book
+    /**
+     * Busca un modelo Book basado en su ID.
+     *
+     * @param string $id El ID del libro a buscar
+     * @return Book El modelo Book encontrado
+     * @throws NotFoundHttpException si el libro no existe
+     * @throws ServerErrorHttpException si ocurre un error al buscar el libro
+     */
+    public function findModel(string $id): Book
     {
         try {
             $model = Book::findOne($id);
@@ -78,6 +116,14 @@ class BookController extends ActiveController
         }
     }
 
+    /**
+     * Crea un nuevo libro.
+     *
+     * @param Request $request La solicitud HTTP
+     * @return Book El libro creado
+     * @throws BadRequestHttpException si los datos proporcionados no son válidos
+     * @throws ServerErrorHttpException si ocurre un error al crear el libro
+     */
     public function actionCreate(Request $request): Book
     {
         try {
@@ -98,6 +144,16 @@ class BookController extends ActiveController
         }
     }
 
+    /**
+     * Actualiza un libro existente.
+     *
+     * @param Request $request La solicitud HTTP
+     * @param string $id El ID del libro a actualizar
+     * @return Book El libro actualizado
+     * @throws NotFoundHttpException si el libro no existe
+     * @throws BadRequestHttpException si los datos proporcionados no son válidos
+     * @throws ServerErrorHttpException si ocurre un error al actualizar el libro
+     */
     public function actionUpdate(Request $request, string $id): Book
     {
         try {
@@ -118,6 +174,14 @@ class BookController extends ActiveController
         }
     }
 
+    /**
+     * Elimina un libro existente.
+     *
+     * @param Response $response La respuesta HTTP
+     * @param string $id El ID del libro a eliminar
+     * @throws NotFoundHttpException si el libro no existe
+     * @throws ServerErrorHttpException si ocurre un error al eliminar el libro
+     */
     public function actionDelete(Response $response, string $id)
     {
         try {
@@ -134,5 +198,4 @@ class BookController extends ActiveController
             throw new ServerErrorHttpException('Error al eliminar el libro: ' . $e->getMessage());
         }
     }
-
 }

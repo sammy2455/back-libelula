@@ -13,10 +13,24 @@ use yii\web\Request;
 use yii\web\Response;
 use yii\web\ServerErrorHttpException;
 
+/**
+ * AuthorController maneja las operaciones CRUD para el modelo Author.
+ *
+ * Esta clase extiende de yii\rest\ActiveController y proporciona
+ * endpoints RESTful para gestionar autores, incluyendo listado,
+ * creación, actualización y eliminación.
+ */
 class AuthorController extends ActiveController
 {
     public $modelClass = 'app\models\Author';
 
+    /**
+     * Define los comportamientos del controlador.
+     *
+     * Añade el filtro de autenticación JWT a los comportamientos heredados.
+     *
+     * @return array Los comportamientos configurados para este controlador
+     */
     public function behaviors(): array
     {
         $behaviors = parent::behaviors();
@@ -28,6 +42,14 @@ class AuthorController extends ActiveController
         return $behaviors;
     }
 
+    /**
+     * Define las acciones del controlador.
+     *
+     * Sobrescribe las acciones predeterminadas y personaliza el proveedor de datos
+     * para la acción de índice.
+     *
+     * @return array Las acciones configuradas para este controlador
+     */
     public function actions(): array
     {
         $actions = parent::actions();
@@ -38,6 +60,14 @@ class AuthorController extends ActiveController
         return $actions;
     }
 
+    /**
+     * Prepara el proveedor de datos para la acción de índice.
+     *
+     * Permite filtrar autores por nacionalidad si se proporciona en la consulta.
+     *
+     * @return ActiveDataProvider El proveedor de datos configurado
+     * @throws ServerErrorHttpException si ocurre un error al preparar los datos
+     */
     public function prepareDataProvider(): ActiveDataProvider
     {
         try {
@@ -55,7 +85,15 @@ class AuthorController extends ActiveController
         }
     }
 
-    public function findModel($id): Author
+    /**
+     * Busca un modelo Author basado en su ID.
+     *
+     * @param string $id El ID del autor a buscar
+     * @return Author El modelo Author encontrado
+     * @throws NotFoundHttpException si el autor no existe
+     * @throws ServerErrorHttpException si ocurre un error al buscar el autor
+     */
+    public function findModel(string $id): Author
     {
         try {
             $model = Author::findOne($id);
@@ -71,6 +109,14 @@ class AuthorController extends ActiveController
         }
     }
 
+    /**
+     * Crea un nuevo autor.
+     *
+     * @param Request $request La solicitud HTTP
+     * @return Author El autor creado
+     * @throws BadRequestHttpException si los datos proporcionados no son válidos
+     * @throws ServerErrorHttpException si ocurre un error al crear el autor
+     */
     public function actionCreate(Request $request): Author
     {
         try {
@@ -91,6 +137,16 @@ class AuthorController extends ActiveController
         }
     }
 
+    /**
+     * Actualiza un autor existente.
+     *
+     * @param Request $request La solicitud HTTP
+     * @param string $id El ID del autor a actualizar
+     * @return Author El autor actualizado
+     * @throws NotFoundHttpException si el autor no existe
+     * @throws BadRequestHttpException si los datos proporcionados no son válidos
+     * @throws ServerErrorHttpException si ocurre un error al actualizar el autor
+     */
     public function actionUpdate(Request $request, string $id): Author
     {
         try {
@@ -111,6 +167,14 @@ class AuthorController extends ActiveController
         }
     }
 
+    /**
+     * Elimina un autor existente.
+     *
+     * @param Response $response La respuesta HTTP
+     * @param string $id El ID del autor a eliminar
+     * @throws NotFoundHttpException si el autor no existe
+     * @throws ServerErrorHttpException si ocurre un error al eliminar el autor
+     */
     public function actionDelete(Response $response, string $id)
     {
         try {
