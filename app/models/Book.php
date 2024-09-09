@@ -24,6 +24,8 @@ class Book extends ActiveRecord
             'ISBN',
             'created_at',
             'updated_at',
+            'authors',
+            'genres',
         ];
     }
 
@@ -54,14 +56,37 @@ class Book extends ActiveRecord
         ];
     }
 
-    public function getAuthors()
+    public function fields()
     {
-        return $this->hasMany(Author::class, ['_id' => 'author_ids']);
+        $fields = parent::fields();
+
+        $fields['authors'] = function ($model) {
+            return $model->authors;
+        };
+        $fields['genres'] = function ($model) {
+            return $model->genres;
+        };
+
+        unset($fields['author_ids'], $fields['genre_ids']);
+
+        return $fields;
     }
 
-    public function getGenres()
+    public function afterFind()
     {
-        return $this->hasMany(Genre::class, ['_id' => 'genre_ids']);
+        parent::afterFind();
+        $this->loadAuthors();
+        $this->loadGenres();
+    }
+
+    public function loadAuthors()
+    {
+        $this->authors = Author::find()->where(['_id' => $this->author_ids])->all();
+    }
+
+    public function loadGenres()
+    {
+        $this->genres = Genre::find()->where(['_id' => $this->genre_ids])->all();
     }
 
     public function search($params)
