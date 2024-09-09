@@ -1,63 +1,102 @@
-# docker-compose-laravel
-A pretty simplified Docker Compose workflow that sets up a LEMP network of containers for local Laravel development. You can view the full article that inspired this repo [here](https://dev.to/aschmelyun/the-beauty-of-docker-for-local-laravel-development-13c0).
+# docker-compose-yii2
+A simplified Docker Compose workflow that sets up a network of containers for local Yii2 development with MongoDB.
 
 ## Usage
+To get started, make sure you have [Docker installed](https://docs.docker.com/get-docker/) on your system, and then clone this repository.
 
-To get started, make sure you have [Docker installed](https://docs.docker.com/docker-for-mac/install/) on your system, and then clone this repository.
+Next, navigate in your terminal to the directory you cloned this, and follow these steps:
 
-Next, navigate in your terminal to the directory you cloned this, and spin up the containers for the web server by running `docker compose up -d --build site`.
+1. Spin up the containers for the web server by running:
+   ```
+   docker compose up -d --build
+   ```
 
-After that completes, follow the steps from the [app/README.md](app/README.md) file to get your Laravel project added in (or create a new blank one).
+2. Install the Yii2 dependencies using Composer:
+   ```
+   docker compose run --rm composer install
+   ```
 
-Bringing up the Docker Compose network with `site` instead of just using `up`, ensures that only our site's containers are brought up at the start, instead of all of the command containers as well. The following are built for our web server, with their exposed ports detailed:
+3. After that completes, follow the steps from the [app/README.md](app/README.md) file to get your Yii2 project added in (or create a new blank one).
 
-- **nginx** - `:80`
-- **mysql** - `:3306`
+4. If you need to run Yii2 migrations, use:
+   ```
+   docker compose run --rm yii migrate
+   ```
+
+5. Your Yii2 application should now be accessible at [http://localhost:8000](http://localhost:8000)
+
+The following containers are built for our web server, with their exposed ports detailed:
+
+- **nginx** - `:8000`
 - **php** - `:9000`
-- **redis** - `:6379`
-- **mailhog** - `:8025`
-- **soketi** - `:6001`
+- **mongodb** - `:27017`
+- **mailhog** - `:8025` for web interface, `:1025` for SMTP server
 
-Three additional containers are included that handle Composer, NPM, and Artisan commands *without* having to have these platforms installed on your local computer. Use the following command examples from your project root, modifying them to fit your particular use case.
+## Using Docker Compose Run Commands
 
-- `docker compose run --rm composer update`
-- `docker compose run --rm npm run dev`
-- `docker compose run --rm artisan migrate`
+This setup includes additional containers that handle Composer, Yii, and NPM commands *without* having to have these platforms installed on your local computer. Use the following command examples from your project root, modifying them to fit your particular use case:
 
-## Persistent MySQL Storage
+- Update Composer dependencies:
+  ```
+  docker compose run --rm composer update
+  ```
 
-By default, whenever you bring down the Docker network, your MySQL data will be removed after the containers are destroyed. If you would like to have persistent data that remains after bringing containers down and back up, do the following:
+- Run Yii migrations:
+  ```
+  docker compose run --rm yii migrate
+  ```
 
-1. Create a `mysql` folder in the project root, alongside the `nginx` and `src` folders.
-2. Under the mysql service in your `docker-compose.yml` file, add the following lines:
+- Run NPM commands:
+  ```
+  docker compose run --rm npm run dev
+  ```
 
-```
-volumes:
-  - ./mysql:/var/lib/mysql
-```
+- Generate Yii2 models or CRUD:
+  ```
+  docker compose run --rm yii gii/model
+  docker compose run --rm yii gii/crud
+  ```
 
-## Using BrowserSync with Laravel Mix
+## Persistent MongoDB Storage
 
-If you want to enable the hot-reloading that comes with Laravel Mix's BrowserSync option, you'll have to follow a few small steps. First, ensure that you're using the updated `docker-compose.yml` with the `:3000` and `:3001` ports open on the npm service. Then, add the following to the end of your Laravel project's `webpack.mix.js` file:
-
-```javascript
-.browserSync({
-    proxy: 'site',
-    open: false,
-    port: 3000,
-});
-```
-
-From your terminal window at the project root, run the following command to start watching for changes with the npm container and its mapped ports:
-
-```bash
-docker compose run --rm --service-ports npm run watch
-```
-
-That should keep a small info pane open in your terminal (which you can exit with Ctrl + C). Visiting [localhost:3000](http://localhost:3000) in your browser should then load up your Laravel application with BrowserSync enabled and hot-reloading active.
+By default, whenever you bring down the Docker network, your MongoDB data will be persisted in the `./mongodb` folder. This ensures that your data remains intact between container rebuilds.
 
 ## MailHog
 
-The current version of Laravel (8 as of today) uses MailHog as the default application for testing email sending and general SMTP work during local development. Using the provided Docker Hub image, getting an instance set up and ready is simple and straight-forward. The service is included in the `docker-compose.yml` file, and spins up alongside the webserver and database services.
+MailHog is included for testing email sending and general SMTP work during local development. The service is included in the `docker-compose.yml` file, and spins up alongside the webserver and database services.
 
-To see the dashboard and view any emails coming through the system, visit [localhost:8025](http://localhost:8025) after running `docker compose up -d site`.
+To see the dashboard and view any emails coming through the system, visit [localhost:8025](http://localhost:8025) after running `docker compose up -d`.
+
+## Notes
+
+- The PHP service uses a custom Dockerfile located at `./dockerfiles/php.dockerfile`.
+- The Composer service uses a custom Dockerfile located at `./dockerfiles/composer.dockerfile`.
+- The Yii service uses the same Dockerfile as the PHP service.
+- MongoDB is configured with a root username and password, and initializes a database named "libelula".
+- The nginx configuration files should be placed in `./dockerfiles/nginx`.
+- Your Yii2 application code should be placed in the `./app` directory.
+
+Remember to adjust any paths or configurations in your Yii2 application to work with this Docker setup, particularly the database connection settings to use MongoDB.
+
+## Troubleshooting
+
+If you encounter any issues:
+
+1. Ensure all containers are up and running:
+   ```
+   docker compose ps
+   ```
+
+2. Check the logs of a specific service:
+   ```
+   docker compose logs [service_name]
+   ```
+
+3. If you make changes to the Dockerfiles, remember to rebuild:
+   ```
+   docker compose up -d --build
+   ```
+
+4. For permission issues, you may need to adjust the user in the php.dockerfile or use chown in your host machine.
+
+If you continue to face problems, please check the issue tracker or open a new issue with detailed information about your setup and the problem you're experiencing.
