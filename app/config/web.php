@@ -33,7 +33,7 @@ $config = [
             'enableSession' => false,
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+            'class' => 'app\components\CustomErrorHandler',
         ],
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,

@@ -42,6 +42,7 @@ class Author extends ActiveRecord
         return [
             [['full_name', 'birthday', 'nationality'], 'required'],
             ['full_name', 'string', 'max' => 100],
+            ['full_name', 'unique'],
             ['birthday', 'date', 'format' => 'php:Y-m-d'],
             ['nationality', 'string'],
             ['short_biography', 'string', 'max' => 1000],
