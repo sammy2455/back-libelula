@@ -29,7 +29,8 @@ $config = [
         ],
         'user' => [
             'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
+            'enableAutoLogin' => false,
+            'enableSession' => false,
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -49,18 +50,18 @@ $config = [
                 ],
             ],
         ],
-//        'db' => $db,
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
                 [
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => ['book', 'author', 'genre'],
+                    'controller' => ['book', 'author', 'genre', 'user'],
                     'tokens' => [
                         '{id}' => '<id:[\\w-]+>',
                     ],
                 ],
+                'POST auth/login' => 'auth/login',
             ],
         ],
     ],

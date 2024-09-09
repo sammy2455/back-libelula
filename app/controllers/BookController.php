@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\JwtAuthFilter;
 use app\models\Book;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -19,6 +20,10 @@ class BookController extends ActiveController
     public function behaviors(): array
     {
         $behaviors = parent::behaviors();
+
+        $behaviors['jwtAuth'] = [
+            'class' => JwtAuthFilter::class,
+        ];
 
         return $behaviors;
     }

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\JwtAuthFilter;
 use app\models\Author;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -20,8 +21,9 @@ class AuthorController extends ActiveController
     {
         $behaviors = parent::behaviors();
 
-        // Aquí puedes añadir o modificar comportamientos si es necesario
-        // Por ejemplo, configurar CORS o autenticación
+        $behaviors['jwtAuth'] = [
+            'class' => JwtAuthFilter::class,
+        ];
 
         return $behaviors;
     }
