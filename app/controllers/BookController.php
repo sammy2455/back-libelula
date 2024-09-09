@@ -2,9 +2,7 @@
 
 namespace app\controllers;
 
-use app\models\Author;
 use app\models\Book;
-use app\models\Genre;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\rest\ActiveController;
