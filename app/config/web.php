@@ -54,7 +54,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => ['book', 'author']],
+                ['class' => 'yii\rest\UrlRule', 'controller' => ['book', 'author', 'genre']],
             ],
         ],
     ],
