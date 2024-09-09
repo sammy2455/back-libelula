@@ -93,7 +93,7 @@ class AuthorController extends ActiveController
      * @throws NotFoundHttpException si el autor no existe
      * @throws ServerErrorHttpException si ocurre un error al buscar el autor
      */
-    public function findModel(string $id): Author
+    public function actionView(string $id): Author
     {
         try {
             $model = Author::findOne($id);
@@ -150,7 +150,7 @@ class AuthorController extends ActiveController
     public function actionUpdate(Request $request, string $id): Author
     {
         try {
-            $model = $this->findModel($id);
+            $model = Author::findOne($id);
 
             $dataRequest = $request->getBodyParams();
             $model->load($dataRequest, '');
@@ -178,7 +178,7 @@ class AuthorController extends ActiveController
     public function actionDelete(Response $response, string $id)
     {
         try {
-            $model = $this->findModel($id);
+            $model = Author::findOne($id);
 
             if (!$model->delete()) {
                 throw new ServerErrorHttpException('No se pudo eliminar el autor.');

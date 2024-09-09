@@ -157,7 +157,7 @@ class BookController extends ActiveController
     public function actionUpdate(Request $request, string $id): Book
     {
         try {
-            $model = $this->findModel($id);
+            $model = Book::findOne($id);
 
             $dataRequest = $request->getBodyParams();
             $model->load($dataRequest, '');
@@ -185,7 +185,7 @@ class BookController extends ActiveController
     public function actionDelete(Response $response, string $id)
     {
         try {
-            $model = $this->findModel($id);
+            $model = Book::findOne($id);
 
             if (!$model->delete()) {
                 throw new ServerErrorHttpException('No se pudo eliminar el libro.');
