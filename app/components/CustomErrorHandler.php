@@ -6,8 +6,19 @@ use Yii;
 use yii\web\ErrorHandler;
 use yii\web\HttpException;
 
+/**
+ * CustomErrorHandler es un manejador de errores personalizado para la aplicación.
+ *
+ * Esta clase extiende el ErrorHandler predeterminado de Yii2 para proporcionar
+ * respuestas de error en formato JSON y mensajes de error personalizados.
+ */
 class CustomErrorHandler extends ErrorHandler
 {
+    /**
+     * Renderiza la excepción como una respuesta JSON.
+     *
+     * @param \Exception $exception La excepción a renderizar
+     */
     protected function renderException($exception)
     {
         if (Yii::$app->has('response')) {
@@ -29,6 +40,12 @@ class CustomErrorHandler extends ErrorHandler
         }
     }
 
+    /**
+     * Convierte una excepción en un array con información del error.
+     *
+     * @param \Exception $exception La excepción a convertir
+     * @return array Información del error en formato de array
+     */
     protected function convertExceptionToArray($exception)
     {
         $statusCode = $exception instanceof HttpException ? $exception->statusCode : 500;
@@ -41,6 +58,12 @@ class CustomErrorHandler extends ErrorHandler
         ];
     }
 
+    /**
+     * Obtiene un nombre descriptivo para el error basado en el código de estado HTTP.
+     *
+     * @param \Exception $exception La excepción
+     * @return string Nombre descriptivo del error
+     */
     protected function getErrorName($exception)
     {
         if ($exception instanceof HttpException) {
@@ -56,6 +79,12 @@ class CustomErrorHandler extends ErrorHandler
         return 'Error';
     }
 
+    /**
+     * Obtiene un mensaje de error personalizado basado en el código de estado HTTP.
+     *
+     * @param \Exception $exception La excepción
+     * @return string Mensaje de error personalizado
+     */
     protected function getErrorMessage($exception)
     {
         if ($exception instanceof HttpException) {
@@ -69,6 +98,12 @@ class CustomErrorHandler extends ErrorHandler
         return 'Ha ocurrido un error en el servidor';
     }
 
+    /**
+     * Convierte una excepción en una cadena JSON formateada.
+     *
+     * @param \Exception $exception La excepción a convertir
+     * @return string Representación JSON de la excepción
+     */
     protected function convertExceptionToJson($exception)
     {
         return json_encode($this->convertExceptionToArray($exception), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
