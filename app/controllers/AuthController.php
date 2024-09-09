@@ -16,7 +16,7 @@ class AuthController extends Controller
         $user = User::findByUsername($username);
 
         if ($user && $user->validatePassword($password)) {
-            $token = JwtHelper::generateToken($user);
+            $token = JwtHelper::generateToken($user, 300);
             return ['token' => $token];
         } else {
             Yii::$app->response->statusCode = 401;
