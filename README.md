@@ -16,14 +16,12 @@ Next, navigate in your terminal to the directory you cloned this, and follow the
    docker compose run --rm composer install
    ```
 
-3. After that completes, follow the steps from the [app/README.md](app/README.md) file to get your Yii2 project added in (or create a new blank one).
-
-4. If you need to run Yii2 migrations, use:
+3. You need to run Yii2 migrations, use:
    ```
-   docker compose run --rm yii migrate
+   docker compose run --rm yii mongodb-migrate
    ```
 
-5. Your Yii2 application should now be accessible at [http://localhost:8000](http://localhost:8000)
+4. Your Yii2 application should now be accessible at [http://localhost:8000](http://localhost:8000)
 
 The following containers are built for our web server, with their exposed ports detailed:
 
